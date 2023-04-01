@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:issues_viewer/repositories/github_api.dart';
+
+import 'repositories/github_api.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,18 +13,18 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final GithubApi githubApi = GithubApi();
-  List<dynamic> githubRepos = [];
+  List<dynamic> flutterIssues = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchGithubRepos();
+    _fetchFlutterIssues();
   }
 
-  Future<void> _fetchGithubRepos() async {
-    final response = await githubApi.get('https://api.github.com/user/repos');
+  Future<void> _fetchFlutterIssues() async {
+    final response = await githubApi.getFlutterIssues();
     setState(() {
-      githubRepos = response;
+      flutterIssues = response;
     });
   }
 
@@ -31,16 +32,21 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          title: Text('Flutter Issues'),
+        ),
         body: Center(
-          child: githubRepos.isEmpty
+          child: flutterIssues.isEmpty
               ? CircularProgressIndicator()
               : ListView.builder(
-            itemCount: githubRepos.length,
+            itemCount: flutterIssues.length,
             itemBuilder: (BuildContext context, int index) {
-              final repo = githubRepos[index];
+              final issue = flutterIssues[index];
               return ListTile(
-                title: Text(repo['name']),
-                subtitle: Text(repo['description'] ?? 'No description'),
+                title: Text(issue['title']),
+                subtitle: Text(
+                  '#${issue['number']} opened by ${issue['user']['login']}',
+                ),
               );
             },
           ),

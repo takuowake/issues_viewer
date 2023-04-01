@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class GithubApi {
-  final String githubAccessToken = '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';
+  final String githubAccessToken = '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';
 
   //GETリクエストを送信し、レスポンスを受け取り、JSON形式のデータをリストとして返す
-  Future<List<dynamic>> get(String url) async {
-    final response = await http.get(Uri.parse(url), headers: {
+  Future<List<dynamic>> getFlutterIssues() async {
+    final response = await http.get(Uri.parse('https://api.github.com/repos/flutter/flutter/issues'), headers: {
       'Authorization': 'token $githubAccessToken',
       'Accept': 'application/vnd.github.v3+json',
     });
