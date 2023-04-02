@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'models/issue.dart';
 import 'repositories/github_api.dart';
 
 void main() {
@@ -13,19 +14,46 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final GithubApi githubApi = GithubApi();
-  List<dynamic> flutterIssues = [];
+  List<Issue> allFlutterIssues = [];
+
+  int _currentPage = 1;
+  int _perPage = 10;
+  bool _isLoading = false;
+  bool _isLastPage = false;
+
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _fetchFlutterIssues();
+    _fetchAllFlutterIssues();
+    _scrollController.addListener(_scrollListener);
   }
 
-  Future<void> _fetchFlutterIssues() async {
-    final response = await githubApi.getFlutterIssues();
+  Future<void> _fetchAllFlutterIssues() async {
     setState(() {
-      flutterIssues = response;
+      _isLoading = true;
     });
+    final response = await githubApi.getFlutterIssues(_currentPage, _perPage);
+    setState(() {
+      allFlutterIssues.addAll(response);
+      _isLoading = false;
+      if(response.length < _perPage) {
+        _isLastPage = true;
+      }
+    });
+  }
+
+  void _scrollListener() {
+    if(_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
+      if(!_isLoading && !_isLastPage) {
+        setState(() {
+          _currentPage ++;
+          _isLoading = true;
+        });
+        _fetchAllFlutterIssues();
+      }
+    }
   }
 
   @override
@@ -36,18 +64,19 @@ class _MyAppState extends State<MyApp> {
           title: Text('Flutter Issues'),
         ),
         body: Center(
-          child: flutterIssues.isEmpty
+          child: allFlutterIssues.isEmpty
               ? CircularProgressIndicator()
               : ListView.builder(
-            itemCount: flutterIssues.length,
+            controller: _scrollController,
+            itemCount: allFlutterIssues.length,
             itemBuilder: (BuildContext context, int index) {
-              final issue = flutterIssues[index];
-              return ListTile(
-                title: Text(issue['title']),
+              final issue = allFlutterIssues[index];
+              return issue != null ? ListTile(
+                title: Text(issue.title),
                 subtitle: Text(
-                  '#${issue['number']} opened by ${issue['user']['login']}',
+                  '#${issue.id} opened by ${issue.title}',
                 ),
-              );
+              ):Container();
             },
           ),
         ),
