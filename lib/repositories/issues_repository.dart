@@ -1,6 +1,10 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../models/issue.dart';
-import '../utils/enums/issue_state.dart';
 import '../repositories/github_repository.dart';
+import 'github_api.dart';
+
+final issuesRepositoryProvider = Provider((ref) => IssuesRepository(githubRepository: GithubRepository(api: ref.watch(githubApiProvider))));
 
 class IssuesRepository {
   final GithubRepository githubRepository;

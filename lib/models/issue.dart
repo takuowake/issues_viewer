@@ -1,48 +1,60 @@
 class Issue {
-  int id;
-  String title;
-  String body;
-  String state;
-  String author;
-  String createdAt;
-  String updatedAt;
-  List<String> labels;
+  final String title;
+  final int number;
+  final String state;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String body;
+  final int id; // 追加
+  final List<String> labels; // 追加
 
   Issue({
-    required this.id,
     required this.title,
-    required this.body,
+    required this.number,
     required this.state,
-    required this.author,
     required this.createdAt,
     required this.updatedAt,
-    required this.labels,
+    required this.body,
+    required this.id, // 追加
+    required this.labels, // 追加
   });
 
   factory Issue.fromJson(Map<String, dynamic> json) {
     return Issue(
-      id: json['id'],
       title: json['title'],
-      body: json['body'],
+      number: json['number'],
       state: json['state'],
-      author: json['user']['login'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      labels: List<String>.from(
-          json['labels'].map((label) => label['name']).toList()),
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
+      body: json['body'],
+      id: json['id'], // 追加
+      labels: List<String>.from(json['labels'].map((label) => label['name'])), // 追加
     );
   }
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'body': body,
-      'state': state,
-      'author': author,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-      'labels': labels,
-    };
+class User {
+  final String login;
+  final String avatarUrl;
+
+  User({
+    required this.login,
+    required this.avatarUrl,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      login: json['login'] as String,
+      avatarUrl: json['avatar_url'] as String,
+    );
   }
+}
+
+enum IssueState {
+  all,
+  pWebView,
+  pSharedPreferences,
+  waitingForCustomerResponse,
+  severeNewFeature,
+  pShare,
 }
