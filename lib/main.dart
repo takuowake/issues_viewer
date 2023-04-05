@@ -19,8 +19,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final issuesRepositoryProvider =
-  Provider((ref) => IssuesRepository(githubRepository: GithubRepository(api: GithubApi())));
+  late final IssuesRepository issuesRepository;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    issuesRepository = IssuesRepository(githubRepository: GithubRepository(api: GithubApi()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,25 +37,31 @@ class _MyAppState extends State<MyApp> {
         child: Scaffold(
           appBar: AppBar(
             title: const Text('Flutter Issues Viewer'),
-            bottom: const TabBar(
+            bottom: TabBar(
               tabs: [
                 Tab(text: 'すべて'),
-                Tab(text: 'p: webview'),
+                Tab(text: 'p:webview'),
                 Tab(text: 'p: shared_preferences'),
                 Tab(text: 'waiting for customer response'),
-                Tab(text: 'severe: new feature'),
+                Tab(text: 'new feature'),
                 Tab(text: 'p: share'),
               ],
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                  issuesRepository = IssuesRepository(githubRepository: GithubRepository(api: GithubApi()));
+                });
+              },
             ),
           ),
           body: TabBarView(
             children: [
-              _buildTabView(context, IssueState.all),
-              _buildTabView(context, IssueState.pWebView),
-              _buildTabView(context, IssueState.pSharedPreferences),
-              _buildTabView(context, IssueState.waitingForCustomerResponse),
-              _buildTabView(context, IssueState.severeNewFeature),
-              _buildTabView(context, IssueState.pShare),
+              _buildTabView(context, IssueLabel.all),
+              _buildTabView(context, IssueLabel.pWebView),
+              _buildTabView(context, IssueLabel.pSharedPreferences),
+              _buildTabView(context, IssueLabel.waitingForCustomerResponse),
+              _buildTabView(context, IssueLabel.newFeature),
+              _buildTabView(context, IssueLabel.pShare),
             ],
           ),
         ),
@@ -57,10 +69,9 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget _buildTabView(BuildContext context, IssueState issueState) {
-    final issuesRepository = ProviderContainer().read(issuesRepositoryProvider);
+  Widget _buildTabView(BuildContext context, IssueLabel issueLabel) {
     return FutureBuilder<List<Issue>>(
-      future: issuesRepository.getIssues(issueState),
+      future: issuesRepository.getIssues(issueLabel),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -79,12 +90,10 @@ class _MyAppState extends State<MyApp> {
             },
           );
         }
-
         if (snapshot.hasError) {
           return Center(child: Text('Failed to load issues: ${snapshot.error}'));
         }
-
-        return Container();
+        return Container(child: Center(child: Text('No data', style: TextStyle(color: Colors.black),)));
       },
     );
   }

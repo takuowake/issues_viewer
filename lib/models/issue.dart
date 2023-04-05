@@ -5,8 +5,9 @@ class Issue {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String body;
-  final int id; // 追加
-  final List<String> labels; // 追加
+  final int id;
+  final htmlUrl;
+  final List<String> labels;
 
   Issue({
     required this.title,
@@ -15,8 +16,9 @@ class Issue {
     required this.createdAt,
     required this.updatedAt,
     required this.body,
-    required this.id, // 追加
-    required this.labels, // 追加
+    required this.id,
+    required this.labels,
+    required this.htmlUrl,
   });
 
   factory Issue.fromJson(Map<String, dynamic> json) {
@@ -27,34 +29,54 @@ class Issue {
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       body: json['body'],
-      id: json['id'], // 追加
-      labels: List<String>.from(json['labels'].map((label) => label['name'])), // 追加
+      id: json['id'],
+      htmlUrl: json['html_url'],
+      labels: List<String>.from(json['labels'].map((label) => label['name'])),
     );
   }
 }
 
-class User {
-  final String login;
-  final String avatarUrl;
+// class User {
+//   final String login;
+//   final String avatarUrl;
+//
+//   User({
+//     required this.login,
+//     required this.avatarUrl,
+//   });
+//
+//   factory User.fromJson(Map<String, dynamic> json) {
+//     return User(
+//       login: json['login'] as String,
+//       avatarUrl: json['avatar_url'] as String,
+//     );
+//   }
+// }
 
-  User({
-    required this.login,
-    required this.avatarUrl,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      login: json['login'] as String,
-      avatarUrl: json['avatar_url'] as String,
-    );
-  }
-}
-
-enum IssueState {
+enum IssueLabel {
   all,
   pWebView,
   pSharedPreferences,
   waitingForCustomerResponse,
-  severeNewFeature,
-  pShare,
+  newFeature,
+  pShare
+}
+
+extension IssueLabelExtension on IssueLabel {
+  String get label {
+    switch (this) {
+      case IssueLabel.all:
+        return '';
+      case IssueLabel.pWebView:
+        return 'p:webview';
+      case IssueLabel.pSharedPreferences:
+        return 'p:shared_preferences';
+      case IssueLabel.waitingForCustomerResponse:
+        return 'waiting%20for%20customer%20response';
+      case IssueLabel.newFeature:
+        return 'new%20feature';
+      case IssueLabel.pShare:
+        return 'p:share';
+    }
+  }
 }

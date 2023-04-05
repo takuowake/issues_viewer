@@ -11,14 +11,17 @@ class IssuesRepository {
 
   IssuesRepository({required this.githubRepository});
 
-  Map<IssueState, List<Issue>> _cachedIssues = {};
+  Map<IssueLabel, List<Issue>> _cachedIssues = {};
 
-  Future<List<Issue>> getIssues(IssueState issueState) async {
-    if (_cachedIssues.containsKey(issueState)) {
-      return _cachedIssues[issueState]!;
+  Future<List<Issue>> getIssues(IssueLabel issueLabel) async {
+    if (_cachedIssues.containsKey(issueLabel)) {
+      return _cachedIssues[issueLabel]!;
     } else {
-      final issues = await githubRepository.getIssues(issueState);
-      _cachedIssues[issueState] = issues;
+      final issues = await githubRepository.getIssues(issueLabel);
+      if (issues == null) {
+        throw Exception('Failed to load issues');
+      }
+      _cachedIssues[issueLabel] = issues;
       return issues;
     }
   }
