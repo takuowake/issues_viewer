@@ -7,7 +7,6 @@ class GithubRepository {
   GithubRepository({required this.api});
 
   Future<List<Issue>> getIssues(IssueLabel issueLabel, {int page = 1}) async {
-  // Future<List<Issue>> getIssues(IssueLabel issueLabel, page) async {
     switch (issueLabel) {
       case IssueLabel.all:
         return await api.fetchAllIssues(page);
