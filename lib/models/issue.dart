@@ -36,23 +36,6 @@ class Issue {
   }
 }
 
-// class User {
-//   final String login;
-//   final String avatarUrl;
-//
-//   User({
-//     required this.login,
-//     required this.avatarUrl,
-//   });
-//
-//   factory User.fromJson(Map<String, dynamic> json) {
-//     return User(
-//       login: json['login'] as String,
-//       avatarUrl: json['avatar_url'] as String,
-//     );
-//   }
-// }
-
 enum IssueLabel {
   all,
   pWebView,
@@ -60,23 +43,4 @@ enum IssueLabel {
   waitingForCustomerResponse,
   newFeature,
   pShare
-}
-
-extension IssueLabelExtension on IssueLabel {
-  String get label {
-    switch (this) {
-      case IssueLabel.all:
-        return '';
-      case IssueLabel.pWebView:
-        return 'p:webview';
-      case IssueLabel.pSharedPreferences:
-        return 'p:shared_preferences';
-      case IssueLabel.waitingForCustomerResponse:
-        return 'waiting%20for%20customer%20response';
-      case IssueLabel.newFeature:
-        return 'new%20feature';
-      case IssueLabel.pShare:
-        return 'p:share';
-    }
-  }
 }
