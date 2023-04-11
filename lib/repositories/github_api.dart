@@ -9,7 +9,7 @@ final githubApiProvider = Provider((ref) => GithubApi());
 class GithubApi {
   static const String _baseUrl = 'https://api.github.com';
   static const String _repository = 'flutter/flutter';
-  final String githubAccessToken = 'アクセストークン';
+  final String githubAccessToken = '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';
   int perPage = 10;
 
   ///全てのIssuesを取得
